@@ -78,11 +78,19 @@ class SMTP extends NotificationProvider {
             <body style="display: flex; align-items: center; justify-content: center; margin: 0;max-width:500px">
               <div style=" height: auto; background-color: #203040; padding: 0 40px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                 <div style="background-color: white; padding: 30px 30px; height: auto; margin-top: 40px; margin-bottom: 40px;">
-                  <div style="padding: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; text-align: center; background-color: ${
-                      context.STATUS === "🔴 Down" ? "#eb3434" : "#34eb71"
-                  };">
-                 <h3 style="text-align: center;">${context.STATUS.toUpperCase()}</h3>
-                  </div>
+                <div style="padding: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; text-align: center; background-color: ${
+                    context.STATUS === "🔴 Down" ? "#f19616f7" : "#34eb71"
+                };">
+                <h3 style="text-align: center;">
+                ${
+                    context.STATUS === "⚠️ Test"
+                        ? "⚠️ Test"
+                        : context.STATUS === "🔴 Down"
+                        ? "⛔ DOWN"
+                        : "✅ UP"
+                }
+                </div>
+              </h3>
                 ${
                     context.STATUS === "🔴 Down"
                         ? "<h3>Your following monitor has failed</h3>"
