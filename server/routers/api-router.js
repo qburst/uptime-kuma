@@ -663,9 +663,7 @@ router.get("/api/reports", apiAuth, async (request, response) => {
         }
     }
     if(message.length === 0 && startDate && endDate){
-        if (moment(startDate).isSame(endDate) 
-            && (!moment(startDate).isSame(moment().format("YYYY-MM-DD")))) {
-        } else {
+        if (!moment(startDate).isSame(endDate) || (moment(startDate).isSame(moment().format("YYYY-MM-DD")))) {
             if (!moment(startDate).isBefore(moment(endDate))) {
                 message = "Please select valid end date";
             }

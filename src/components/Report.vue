@@ -163,9 +163,7 @@ export default {
             }
 
             if(message.length === 0 && this.report.endDate && this.report.startDate) {
-                if (moment(this.report.startDate).isSame(this.report.endDate) 
-                    && (!moment(this.report.startDate).isSame(moment().format("YYYY-MM-DD")))) {
-                } else {
+                if (!moment(this.report.startDate).isSame(this.report.endDate) || (moment(this.report.startDate).isSame(moment().format("YYYY-MM-DD")))) {
                     if (!moment(this.report.startDate).isBefore(moment(this.report.endDate))) {
                         message = "Please select valid end date";
                     }
