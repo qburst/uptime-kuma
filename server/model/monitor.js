@@ -1622,7 +1622,7 @@ class Monitor extends BeanModel {
         let tlsInfo = await R.findOne("monitor_tls_info", "monitor_id = ?", [
             monitorID,
         ]);
-        return tlsInfo.info_json;
+        return (tlsInfo && tlsInfo !== null) ?  tlsInfo.info_json : ""; 
     }
 
     /**
@@ -1647,7 +1647,8 @@ class Monitor extends BeanModel {
             customRange = await uptimeCalculator.getDataByDateRange(startDate, endDate, monitorId);
             chartUptime = customRange.uptime;
         }
-        let tlsInfo = JSON.parse(await Monitor.getCertInfo(monitorId));
+        let tlsInfo = await Monitor.getCertInfo(monitorId) 
+        let certInfo = tlsInfo ? JSON.parse(tlsInfo) : '';
         let formattedDate = moment().format("MM-DD-YYYY_HH:mm:ss");
         let fileName = monitorDetails.name + "_" + formattedDate + ".pdf";
         let filePath = "data/report/" + fileName;
@@ -1716,13 +1717,16 @@ class Monitor extends BeanModel {
                             <p>${!isNaN(chartUptime) ? (customRange.uptime * 100).toFixed(2)+"%": "No data"}</p>
                         </td>`;
                     }
-                    htmlContent += `<td>
-                        <h3>Cert Exp.</h3>
-                        <p>(${ moment(tlsInfo.certInfo.validTo).format("MM-DD-YYYY")})</p>
-                        <p>${tlsInfo.certInfo.daysRemaining} days</p>
-                    </td>
-                </tr>
-            </table>`;
+                    if(certInfo) {
+                        htmlContent += `<td>
+                            <h3>Cert Exp.</h3>
+                            <p>(${ moment(certInfo.certInfo.validTo).format("MM-DD-YYYY")})</p>
+                            <p>${certInfo.certInfo.daysRemaining} days</p>
+                        </td>`;
+                    }
+                    
+                htmlContent += `</tr>
+                    </table>`;
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
