@@ -12,16 +12,12 @@
                             <label for="monitor" class="form-label">
                                 {{ $t("Select Monitor") }}
                             </label>
-                            <select id="monitor" v-model="report.monitor" class="form-select">
-                                <option value="">Select Monitor</option>
-                                <option
-                                    v-for="(monitor, index) in sortedMonitorList"
-                                    :key="index"
-                                    :value="monitor.pathName"
-                                >
-                                    {{ monitor.name }}
-                                </option>
-                            </select>
+                            <input v-model="searchTerm" class="form-control" placeholder="Search" @input="filterItems" />
+                            <ul v-show="isOpen">
+                                <li v-for="item in filteredItems" :key="item.id" @click="selectItem(item)">
+                                    {{ item.name }}
+                                </li>
+                            </ul>
                         </div>
                         <div class="mb-4">
                             <div class="d-flex flex-row align-items-center">
@@ -88,13 +84,15 @@ export default {
             minEndDate: "",
             processing: false,
             selectedDate: null,
-            fetchedData: null
+            fetchedData: null,
+            searchTerm: '',
+            filteredItems: [],
+            isOpen: false
         };
     },
     computed: {
         sortedMonitorList() {
             let result = Object.values(this.$root.monitorList);
-
             // Filter result by active state, weight and alphabetical
             result.sort((m1, m2) => {
                 if (m1.active !== m2.active) {
@@ -119,10 +117,9 @@ export default {
 
                 return m1.name.localeCompare(m2.name);
             });
-
+            this.filteredItems = result;
             return result;
         },
-
         timePeriod() {
             let startDays = 7;
             let endDays = 30;
@@ -136,6 +133,22 @@ export default {
     mounted() {
     },
     methods: {
+        
+        handleSelectChange() {
+            // Reset search term when an item is selected
+            this.searchTerm = '';
+        },
+        filterItems() {
+            this.isOpen = true;
+            this.filteredItems = this.sortedMonitorList.filter(item =>
+                item.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+            );
+        },
+        selectItem(monitor) {
+            this.report.monitor = monitor.name;
+            this.searchTerm = monitor.name;
+            this.isOpen = false;
+        },
         init() {
             this.report = {
                 monitor: "",
@@ -309,4 +322,48 @@ export default {
             }
         }
     }
+    .monitor_list {
+        position: absolute;
+        background-color: #fff;
+        margin-left: 103px;
+        width: 63%;
+    }
+    .monitor_list li {
+        padding: 5px;
+    }
+    .monitor_list li:hover {
+        background-color: #5cdd8b;
+    }
+    .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        input {
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            width: 62%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border: 1px solid #ccc;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1;
+        }
+
+        ul li {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        ul li:hover {
+            background-color: #f0f0f0;
+        }
 </style>

@@ -1651,9 +1651,8 @@ class Monitor extends BeanModel {
         let formattedDate = moment().format("MM-DD-YYYY_HH:mm:ss");
         let fileName = monitorDetails.name + "_" + formattedDate + ".pdf";
         let filePath = "data/report/" + fileName;
-
         const pieChartData = {
-            labels: [ "UpTime(" + (chartUptime * 100).toFixed(2) + ")", "DownTime(" + (100 - (chartUptime * 100)).toFixed(2) + ")" ],
+            labels: [ "UpTime(" + (!isNaN(chartUptime) ? (chartUptime * 100).toFixed(2): 0) + ")", "DownTime(" + (!isNaN(chartUptime) ? ((100 - (chartUptime * 100)).toFixed(2)) : 0)+ ")" ],
             datasets: [{
                 data: [ (chartUptime * 100).toFixed(2), (100 - (chartUptime * 100).toFixed(2)) ],
                 backgroundColor: [ "#FF6384", "#36A2EB" ],
@@ -1714,7 +1713,7 @@ class Monitor extends BeanModel {
                         htmlContent += `<td>
                             <h4>Uptime</h4>
                             <p>(${moment(startDate).format("MM-DD-YYYY")} -<br> ${moment(endDate).format("MM-DD-YYYY")})</p>
-                            <p>${(customRange.uptime * 100).toFixed(2)}%</p>
+                            <p>${!isNaN(chartUptime) ? (customRange.uptime * 100).toFixed(2)+"%": "No data"}</p>
                         </td>`;
                     }
                     htmlContent += `<td>

@@ -451,7 +451,6 @@ class UptimeCalculator {
         };
         let totalPing = 0;
         let endTimestamp = startTime;
-        console.log(this.dailyUptimeDataList);
         while (key >= endTimestamp) {
             let data;
             data = this.dailyUptimeDataList[key];
@@ -471,7 +470,7 @@ class UptimeCalculator {
             avgPing = totalPing / total.up;
         }
 
-        uptimeData.uptime = total.up === 0 ? 1 : (total.up / (total.up + total.down));
+        uptimeData.uptime = total.up / (total.up + total.down);
         uptimeData.avgPing = avgPing;
         return uptimeData;
     }
