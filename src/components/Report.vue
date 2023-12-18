@@ -335,35 +335,35 @@ export default {
         background-color: #5cdd8b;
     }
     .dropdown {
-            position: relative;
-            display: inline-block;
-        }
+        position: relative;
+        display: inline-block;
+    }
 
-        input {
-            padding: 8px;
-            font-size: 16px;
-        }
+    input {
+        padding: 8px;
+        font-size: 16px;
+    }
 
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            position: absolute;
-            width: 62%;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            border: 1px solid #ccc;
-            max-height: 150px;
-            overflow-y: auto;
-            z-index: 1;
-        }
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        position: absolute;
+        width: 62%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        border: 1px solid #ccc;
+        max-height: 150px;
+        overflow-y: auto;
+        z-index: 1;
+    }
 
-        ul li {
-            padding: 8px;
-            cursor: pointer;
-        }
+    ul li {
+        padding: 8px;
+        cursor: pointer;
+    }
 
-        ul li:hover {
-            background-color: #f0f0f0;
-        }
+    ul li:hover {
+        background-color: #f0f0f0;
+    }
 </style>
