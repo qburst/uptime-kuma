@@ -12,16 +12,38 @@
                             <label for="monitor" class="form-label">
                                 {{ $t("Select Monitor") }}
                             </label>
-                            <select id="monitor" v-model="report.monitor" class="form-select">
-                                <option value="">Select Monitor</option>
-                                <option
-                                    v-for="(monitor, index) in sortedMonitorList"
-                                    :key="index"
-                                    :value="monitor.pathName"
-                                >
-                                    {{ monitor.name }}
-                                </option>
-                            </select>
+                            <input v-model="searchTerm" class="form-control" placeholder="Search" @input="filterItems" />
+                            <ul v-show="isOpen">
+                                <li v-for="item in filteredItems" :key="item.id" @click="selectItem(item)">
+                                    {{ item.name }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mb-4">
+                            <div class="d-flex flex-row align-items-center">
+                                <div class="col-6">
+                                    <label class="form-label">{{ $t("From Date") }}</label>
+                                    <datepicker
+                                        v-model="report.startDate"
+                                        :dark="$root.isDark"
+                                        :monthChangeOnScroll="false"
+                                        format="yyyy-MM-dd"
+                                        @update:model-value="handleDateChange"
+                                        modelType="yyyy-MM-dd 00:00:00"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">{{ $t("To Date") }}</label>
+                                    <datepicker
+                                        v-model="report.endDate"
+                                        :dark="$root.isDark"
+                                        :monthChangeOnScroll="false"
+                                        :minDate="minEndDate"
+                                        format="yyyy-MM-dd"
+                                        modelType="yyyy-MM-dd 23:59:59"
+                                    />
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-4">
                             <div>
@@ -44,22 +66,33 @@
 
 import { getResBaseURL } from "../util-frontend";
 import { useToast } from "vue-toastification";
+import Datepicker from "@vuepic/vue-datepicker";
 const toast = useToast();
+import moment from "moment";
 
 export default {
     components: {
-
+        Datepicker
     },
     data() {
         return {
-            report: { monitor: "" },
+            report: {
+                monitor: "",
+                startDate: "",
+                endDate: ""
+            },
+            minEndDate: "",
             processing: false,
+            selectedDate: null,
+            fetchedData: null,
+            searchTerm: '',
+            filteredItems: [],
+            isOpen: false
         };
     },
     computed: {
         sortedMonitorList() {
             let result = Object.values(this.$root.monitorList);
-
             // Filter result by active state, weight and alphabetical
             result.sort((m1, m2) => {
                 if (m1.active !== m2.active) {
@@ -84,10 +117,9 @@ export default {
 
                 return m1.name.localeCompare(m2.name);
             });
-
+            this.filteredItems = result;
             return result;
         },
-
         timePeriod() {
             let startDays = 7;
             let endDays = 30;
@@ -99,12 +131,29 @@ export default {
         }
     },
     mounted() {
-
     },
     methods: {
+        
+        handleSelectChange() {
+            // Reset search term when an item is selected
+            this.searchTerm = '';
+        },
+        filterItems() {
+            this.isOpen = true;
+            this.filteredItems = this.sortedMonitorList.filter(item =>
+                item.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+            );
+        },
+        selectItem(monitor) {
+            this.report.monitor = monitor.name;
+            this.searchTerm = monitor.name;
+            this.isOpen = false;
+        },
         init() {
             this.report = {
-                monitor: ""
+                monitor: "",
+                startDate: "",
+                endDate: ""
             };
         },
 
@@ -114,7 +163,34 @@ export default {
                 toast.error("Please select monitor");
                 return this.processing = false;
             }
-            this.$root.generateReports(this.report.monitor, async (res) => {
+            let message = "";
+            if (this.report.startDate !== "" && (this.report.startDate && this.report.startDate.length !== 0)) {
+                if (this.report.endDate === "" || this.report.endDate === null) {
+                    message = "Please select end date";
+                }
+            }
+            if (this.report.endDate !== "" && (this.report.endDate && this.report.endDate.length !== 0)) {
+                if (this.report.startDate === "" || this.report.startDate === null) {
+                    message = "Please select start date";
+                }
+            }
+
+            if(message.length === 0 && this.report.endDate && this.report.startDate) {
+                if (!moment(this.report.startDate).isSame(this.report.endDate) || (moment(this.report.startDate).isSame(moment().format("YYYY-MM-DD")))) {
+                    if (!moment(this.report.startDate).isBefore(moment(this.report.endDate))) {
+                        message = "Please select valid end date";
+                    }
+                }
+                if (moment(this.report.endDate, "YYYY-MM-DD").isAfter(moment())) {
+                    message = "Please select valid end date";
+                }
+            }
+
+            if (message.length > 0) {
+                toast.error(message);
+                return this.processing = false;
+            }
+            this.$root.generateReports(this.report, async (res) => {
                 if (res.ok) {
                     this.processing = false;
                     const fileUrl = res.data.filePath;
@@ -151,7 +227,11 @@ export default {
             } else {
                 return getResBaseURL() + icon;
             }
-        }
+        },
+
+        handleDateChange(date) {
+            this.minEndDate = date;
+        },
     },
 };
 </script>
@@ -208,5 +288,82 @@ export default {
                 background-color: $dark-bg2;
             }
         }
+    }
+
+    .weekday-picker {
+        display: flex;
+        gap: 10px;
+
+        & > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40px;
+
+            .form-check-inline {
+                margin-right: 0;
+            }
+        }
+    }
+
+    .day-picker {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+
+        & > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40px;
+
+            .form-check-inline {
+                margin-right: 0;
+            }
+        }
+    }
+    .monitor_list {
+        position: absolute;
+        background-color: #fff;
+        margin-left: 103px;
+        width: 63%;
+    }
+    .monitor_list li {
+        padding: 5px;
+    }
+    .monitor_list li:hover {
+        background-color: #5cdd8b;
+    }
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    input {
+        padding: 8px;
+        font-size: 16px;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        position: absolute;
+        width: 62%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        border: 1px solid #ccc;
+        max-height: 150px;
+        overflow-y: auto;
+        z-index: 1;
+    }
+
+    ul li {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    ul li:hover {
+        background-color: #f0f0f0;
     }
 </style>
