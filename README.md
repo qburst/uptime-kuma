@@ -65,7 +65,7 @@ Requirements:
 # Update your npm
 npm install npm@9 -g
 
-git clone https://github.com/louislam/uptime-kuma.git
+git clone --single-branch --branch master-v1 https://github.com/qburst/uptime-kuma
 cd uptime-kuma
 npm run setup
 
