@@ -126,13 +126,16 @@ Export report : PDF
 Steps 1: Create API key from the application.
 
 Steps 2: Use curl command to 
+  ```bash
   curl {base_url}api/reports?monitor={monitor_name} -u "{username}:{api_key}".
-
+  ```
 Steps 3: Use the file path to view the generated pdf.
 
 Example: 
-  curl {base_url}api/reports?monitor={monitor_name}&startDate=2023-12-13&endDate=2023-12-14 -u "{username}:{api_key}"
 
+  ```bash
+  curl {base_url}api/reports?monitor={monitor_name}&startDate=2023-12-13&endDate=2023-12-14 -u "{username}:{api_key}"
+  ```
 ## 🆙 How to Update
 
 Please read:
