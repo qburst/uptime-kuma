@@ -1728,7 +1728,10 @@ class Monitor extends BeanModel {
                 htmlContent += `</tr>
                     </table>`;
 
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({
+                                   headless: true,
+                                  args: ['--no-sandbox']
+                                 });
         const page = await browser.newPage();
         // Combine HTML content and pie chart HTML
         const combinedHtml = `
