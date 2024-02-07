@@ -1656,13 +1656,15 @@ class Monitor extends BeanModel {
             labels: [ "UpTime(" + (!isNaN(chartUptime) ? (chartUptime * 100).toFixed(2): 0) + ")", "DownTime(" + (!isNaN(chartUptime) ? ((100 - (chartUptime * 100)).toFixed(2)) : 0)+ ")" ],
             datasets: [{
                 data: [ (chartUptime * 100).toFixed(2), (100 - (chartUptime * 100).toFixed(2)) ],
-                backgroundColor: [ "#FF6384", "#36A2EB" ],
+                backgroundColor: [ "#4acf59", "#ff531a" ],
+                borderWidth: 0,
+                segmentShowStroke: false
             }]
         };
 
         const chartConfig = {
             type: "pie",
-            data: pieChartData
+            data: pieChartData,
         };
         const chartCanvas = `
             <canvas id="pie-chart" width="400" height="400"></canvas>
