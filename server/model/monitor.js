@@ -935,7 +935,7 @@ class Monitor extends BeanModel {
 
                 if (Monitor.isImportantForNotification(isFirstBeat, previousBeat?.status, bean.status)) {
                     log.debug("monitor", `[${this.name}] sendNotification`);
-                    await Monitor.sendNotification(isFirstBeat, this, bean);
+                    // await Monitor.sendNotification(isFirstBeat, this, bean);
                 } else {
                     log.debug("monitor", `[${this.name}] will not sendNotification because it is (or was) under maintenance`);
                 }
@@ -957,7 +957,7 @@ class Monitor extends BeanModel {
                     if (bean.downCount >= this.resendInterval) {
                         // Send notification again, because we are still DOWN
                         log.debug("monitor", `[${this.name}] sendNotification again: Down Count: ${bean.downCount} | Resend Interval: ${this.resendInterval}`);
-                        await Monitor.sendNotification(isFirstBeat, this, bean);
+                        //await Monitor.sendNotification(isFirstBeat, this, bean);
 
                         // Reset down count
                         bean.downCount = 0;
@@ -1296,7 +1296,7 @@ class Monitor extends BeanModel {
      */
     static async sendNotification(isFirstBeat, monitor, bean) {
         if (!isFirstBeat || bean.status === DOWN) {
-            const notificationList = await Monitor.getNotificationList(monitor);
+            const notificationList = {} //await Monitor.getNotificationList(monitor);
 
             let text;
             if (bean.status === UP) {
@@ -1349,7 +1349,7 @@ class Monitor extends BeanModel {
      */
     async checkCertExpiryNotifications(tlsInfoObject) {
         if (tlsInfoObject && tlsInfoObject.certInfo && tlsInfoObject.certInfo.daysRemaining) {
-            const notificationList = await Monitor.getNotificationList(this);
+            const notificationList = {} //await Monitor.getNotificationList(this);
 
             if (! notificationList.length > 0) {
                 // fail fast. If no notification is set, all the following checks can be skipped.
