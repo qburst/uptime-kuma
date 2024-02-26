@@ -935,7 +935,7 @@ class Monitor extends BeanModel {
 
                 if (Monitor.isImportantForNotification(isFirstBeat, previousBeat?.status, bean.status)) {
                     log.debug("monitor", `[${this.name}] sendNotification`);
-                    // await Monitor.sendNotification(isFirstBeat, this, bean);
+                    await Monitor.sendNotification(isFirstBeat, this, bean);
                 } else {
                     log.debug("monitor", `[${this.name}] will not sendNotification because it is (or was) under maintenance`);
                 }
@@ -957,7 +957,7 @@ class Monitor extends BeanModel {
                     if (bean.downCount >= this.resendInterval) {
                         // Send notification again, because we are still DOWN
                         log.debug("monitor", `[${this.name}] sendNotification again: Down Count: ${bean.downCount} | Resend Interval: ${this.resendInterval}`);
-                        //await Monitor.sendNotification(isFirstBeat, this, bean);
+                        await Monitor.sendNotification(isFirstBeat, this, bean);
 
                         // Reset down count
                         bean.downCount = 0;
